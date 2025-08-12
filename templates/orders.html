@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Pedidos - Igreja Evangélica Assembleia de Deus Jerusalém{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h3 fw-bold text-primary">
+                            <i class="fas fa-list me-2"></i>Gerenciar Pedidos
+                        </h1>
+                        <p class="text-muted mb-0">Lista completa de todos os pedidos de camisetas</p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('new_order') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Novo Pedido
+                        </a>
+                        <a href="{{ url_for('generate_pdf') }}" class="btn btn-outline-danger">
+                            <i class="fas fa-file-pdf me-2"></i>Gerar PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-filter me-2"></i>Filtros
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="GET" action="{{ url_for('orders') }}">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label for="status" class="form-label">Status</label>
+                                    <select name="status" id="status" class="form-select">
+                                        <option value="">Todos os Status</option>
+                                        {% for status in all_statuses %}
+                                        <option value="{{ status }}" {% if current_filters.status == status %}selected{% endif %}>
+                                            {{ status }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-2">
+                                    <label for="size" class="form-label">Tamanho</label>
+                                    <select name="size" id="size" class="form-select">
+                                        <option value="">Todos os Tamanhos</option>
+                                        {% for size in all_sizes %}
+                                        <option value="{{ size }}" {% if current_filters.size == size %}selected{% endif %}>
+                                            {{ size }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <label for="model" class="form-label">Modelo</label>
+                                    <input type="text" name="model" id="model" class="form-control" 
+                                           placeholder="Buscar por modelo" value="{{ current_filters.model }}">
+                                </div>
+                                
+                                <div class="col-md-2">
+                                    <label for="lot" class="form-label">Lote</label>
+                                    <input type="text" name="lot" id="lot" class="form-control" 
+                                           placeholder="Buscar por lote" value="{{ current_filters.lot }}">
+                                </div>
+                                
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <div class="d-grid w-100">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-search me-2"></i>Filtrar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if current_filters.status or current_filters.size or current_filters.model or current_filters.lot %}
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <a href="{{ url_for('orders') }}" class="btn btn-outline-secondary btn-sm">
+                                        <i class="fas fa-times me-2"></i>Limpar Filtros
+                                    </a>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-table me-2"></i>Lista de Pedidos ({{ orders|length }} encontrados)
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if orders %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Cliente</th>
+                                            <th>Contato</th>
+                                            <th>Lote</th>
+                                            <th>Modelo</th>
+                                            <th>Tamanho</th>
+                                            <th>Qtd</th>
+                                            <th>Cor</th>
+                                            <th>Valor Unit.</th>
+                                            <th>Valor Total</th>
+                                            <th>Status</th>
+                                            <th>Data Pedido</th>
+                                            <th>Data Entrega</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in orders %}
+                                        <tr>
+                                            <td><strong>#{{ order.id }}</strong></td>
+                                            <td>{{ order.customer_name }}</td>
+                                            <td>
+                                                {% if order.customer_phone %}
+                                                    <small class="d-block">{{ order.customer_phone }}</small>
+                                                {% endif %}
+                                                {% if order.customer_email %}
+                                                    <small class="d-block text-muted">{{ order.customer_email }}</small>
+                                                {% endif %}
+                                            </td>
+                                            <td><span class="badge bg-secondary">{{ order.lot_number }}</span></td>
+                                            <td>{{ order.model }}</td>
+                                            <td><span class="badge bg-info">{{ order.size }}</span></td>
+                                            <td><strong>{{ order.quantity }}</strong></td>
+                                            <td>{{ order.color or '-' }}</td>
+                                            <td>R$ {{ "%.2f"|format(order.unit_price) }}</td>
+                                            <td><strong>R$ {{ "%.2f"|format(order.total_price) }}</strong></td>
+                                            <td>
+                                                <span class="badge bg-{{ 'warning' if order.status == 'Pendente' else 'info' if order.status == 'Em Produção' else 'primary' if order.status == 'Pronto' else 'success' }}">
+                                                    {{ order.status }}
+                                                </span>
+                                            </td>
+                                            <td>{{ order.order_date.strftime('%d/%m/%Y') }}</td>
+                                            <td>
+                                                {% if order.delivery_date %}
+                                                    {{ order.delivery_date.strftime('%d/%m/%Y') }}
+                                                {% else %}
+                                                    <span class="text-muted">-</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ url_for('edit_order', order_id=order.id) }}" 
+                                                       class="btn btn-sm btn-outline-primary" title="Editar">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a href="{{ url_for('delete_order', order_id=order.id) }}" 
+                                                       class="btn btn-sm btn-outline-danger" title="Excluir"
+                                                       onclick="return confirm('Tem certeza que deseja excluir este pedido?')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% if order.observations %}
+                                        <tr class="table-light">
+                                            <td colspan="14">
+                                                <small><strong>Observações:</strong> {{ order.observations }}</small>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">Nenhum pedido encontrado</h5>
+                                {% if current_filters.status or current_filters.size or current_filters.model or current_filters.lot %}
+                                    <p class="text-muted">Tente ajustar os filtros ou criar um novo pedido</p>
+                                    <a href="{{ url_for('orders') }}" class="btn btn-outline-secondary me-2">
+                                        <i class="fas fa-times me-2"></i>Limpar Filtros
+                                    </a>
+                                {% else %}
+                                    <p class="text-muted">Comece criando seu primeiro pedido</p>
+                                {% endif %}
+                                <a href="{{ url_for('new_order') }}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Novo Pedido
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-submit form on filter change
+document.addEventListener('DOMContentLoaded', function() {
+    const filterForm = document.querySelector('form');
+    const selectElements = filterForm.querySelectorAll('select');
+    
+    selectElements.forEach(select => {
+        select.addEventListener('change', function() {
+            filterForm.submit();
+        });
+    });
+});
+</script>
+{% endblock %}

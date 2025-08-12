@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}Bem-vindo - Igreja Evangélica Assembleia de Deus Jerusalém{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <h1 class="display-4 fw-bold text-primary mb-4">
+                        <i class="fas fa-church text-secondary me-3"></i>
+                        Igreja Evangélica<br>
+                        <span class="text-secondary">Assembleia de Deus</span><br>
+                        <span class="text-warning">Jerusalém</span>
+                    </h1>
+                    <p class="lead text-muted mb-4">
+                        Sistema integrado de gestão de pedidos de camisetas para nossa congregação. 
+                        Gerencie pedidos, acompanhe produção e gere relatórios de forma simples e eficiente.
+                    </p>
+                    <div class="d-grid gap-2 d-md-flex">
+                        {% if not session.admin_id %}
+                            <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg me-md-2">
+                                <i class="fas fa-sign-in-alt me-2"></i>Área Administrativa
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg me-md-2">
+                                <i class="fas fa-tachometer-alt me-2"></i>Ir para Dashboard
+                            </a>
+                            <a href="{{ url_for('new_order') }}" class="btn btn-outline-primary btn-lg">
+                                <i class="fas fa-plus me-2"></i>Novo Pedido
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-image text-center">
+                    <!-- Church-themed illustration using Font Awesome icons -->
+                    <div class="church-illustration">
+                        <i class="fas fa-church fa-10x text-primary opacity-25"></i>
+                        <div class="overlay-icons">
+                            <i class="fas fa-tshirt fa-2x text-secondary"></i>
+                            <i class="fas fa-clipboard-list fa-2x text-warning"></i>
+                            <i class="fas fa-chart-line fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="display-6 fw-bold text-primary">Recursos do Sistema</h2>
+                <p class="lead text-muted">Tudo que você precisa para gerenciar os pedidos da igreja</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card h-100 p-4 bg-white rounded shadow-sm text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-clipboard-list fa-3x text-primary"></i>
+                    </div>
+                    <h4 class="fw-bold text-dark">Gestão de Pedidos</h4>
+                    <p class="text-muted">
+                        Cadastre, edite e acompanhe todos os pedidos de camisetas com informações 
+                        detalhadas como tamanhos, modelos e quantidades.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card h-100 p-4 bg-white rounded shadow-sm text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-chart-bar fa-3x text-success"></i>
+                    </div>
+                    <h4 class="fw-bold text-dark">Dashboard Completo</h4>
+                    <p class="text-muted">
+                        Visualize estatísticas em tempo real, acompanhe o status dos pedidos 
+                        e tenha uma visão geral completa do negócio.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card h-100 p-4 bg-white rounded shadow-sm text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-file-pdf fa-3x text-danger"></i>
+                    </div>
+                    <h4 class="fw-bold text-dark">Relatórios em PDF</h4>
+                    <p class="text-muted">
+                        Gere relatórios profissionais em PDF com todas as informações 
+                        necessárias para controle e prestação de contas.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card h-100 p-4 bg-white rounded shadow-sm text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-filter fa-3x text-warning"></i>
+                    </div>
+                    <h4 class="fw-bold text-dark">Filtros Avançados</h4>
+                    <p class="text-muted">
+                        Encontre pedidos rapidamente usando filtros por status, tamanho, 
+                        modelo, lote e outras características.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card h-100 p-4 bg-white rounded shadow-sm text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-cogs fa-3x text-info"></i>
+                    </div>
+                    <h4 class="fw-bold text-dark">Configurações</h4>
+                    <p class="text-muted">
+                        Adicione novos lotes, tamanhos e modelos conforme a necessidade 
+                        da igreja, mantendo o sistema sempre atualizado.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card h-100 p-4 bg-white rounded shadow-sm text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-mobile-alt fa-3x text-secondary"></i>
+                    </div>
+                    <h4 class="fw-bold text-dark">Responsivo</h4>
+                    <p class="text-muted">
+                        Acesse o sistema de qualquer dispositivo - computador, tablet 
+                        ou celular - com interface adaptada para todas as telas.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="display-6 fw-bold text-primary mb-4">Sobre Nossa Igreja</h2>
+                <p class="lead text-muted mb-4">
+                    A Igreja Evangélica Assembleia de Deus Jerusalém é uma congregação comprometida 
+                    com a fé, o serviço e a adoração, onde o principal objetivo é proclamar o 
+                    Evangelho de Cristo e promover espiritual, moral e socialmente o povo de Deus.
+                </p>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Congregação de fé e adoração</span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Compromisso com o Evangelho de Cristo</span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Promoção espiritual e moral da comunidade</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <a href="https://www.instagram.com/ieadajerusalem/" target="_blank" class="btn btn-outline-primary">
+                        <i class="fab fa-instagram me-2"></i>Siga-nos no Instagram
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <div class="church-values">
+                        <div class="value-item mb-4 p-4 bg-light rounded">
+                            <i class="fas fa-bible fa-3x text-primary mb-3"></i>
+                            <h5 class="fw-bold">Palavra de Deus</h5>
+                            <p class="text-muted mb-0">A Bíblia como única regra de fé e prática</p>
+                        </div>
+                        <div class="value-item mb-4 p-4 bg-light rounded">
+                            <i class="fas fa-dove fa-3x text-info mb-3"></i>
+                            <h5 class="fw-bold">Espírito Santo</h5>
+                            <p class="text-muted mb-0">Cremos no batismo no Espírito Santo</p>
+                        </div>
+                        <div class="value-item p-4 bg-light rounded">
+                            <i class="fas fa-heart fa-3x text-danger mb-3"></i>
+                            <h5 class="fw-bold">Amor ao Próximo</h5>
+                            <p class="text-muted mb-0">Servindo a comunidade com amor cristão</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

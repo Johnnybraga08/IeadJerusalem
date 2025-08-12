@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Editar' if editing else 'Novo' }} Pedido - Igreja Evangélica Assembleia de Deus Jerusalém{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h3 fw-bold text-primary">
+                            <i class="fas fa-{{ 'edit' if editing else 'plus' }} me-2"></i>
+                            {{ 'Editar' if editing else 'Novo' }} Pedido
+                        </h1>
+                        <p class="text-muted mb-0">{{ 'Atualize as informações do' if editing else 'Preencha os dados do' }} pedido de camiseta</p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('orders') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Voltar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Form -->
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-form me-2"></i>Informações do Pedido
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('edit_order', order_id=order.id) if editing else url_for('new_order') }}">
+                            <div class="row g-4">
+                                <!-- Customer Information -->
+                                <div class="col-12">
+                                    <h6 class="fw-bold text-primary border-bottom pb-2">
+                                        <i class="fas fa-user me-2"></i>Dados do Cliente
+                                    </h6>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <label for="customer_name" class="form-label">Nome do Cliente *</label>
+                                    <input type="text" class="form-control" id="customer_name" name="customer_name" 
+                                           value="{{ order.customer_name if editing else '' }}" required>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <label for="customer_phone" class="form-label">Telefone</label>
+                                    <input type="tel" class="form-control" id="customer_phone" name="customer_phone" 
+                                           value="{{ order.customer_phone if editing else '' }}" 
+                                           placeholder="(11) 99999-9999">
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <label for="customer_email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="customer_email" name="customer_email" 
+                                           value="{{ order.customer_email if editing else '' }}" 
+                                           placeholder="cliente@email.com">
+                                </div>
+
+                                <!-- Product Information -->
+                                <div class="col-12 mt-4">
+                                    <h6 class="fw-bold text-primary border-bottom pb-2">
+                                        <i class="fas fa-tshirt me-2"></i>Dados do Produto
+                                    </h6>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <label for="lot_number" class="form-label">Número do Lote *</label>
+                                    <input type="text" class="form-control" id="lot_number" name="lot_number" 
+                                           value="{{ order.lot_number if editing else '' }}" 
+                                           list="lots_list" required>
+                                    <datalist id="lots_list">
+                                        {% for lot in lots %}
+                                        <option value="{{ lot.lot_number }}">{{ lot.description }}</option>
+                                        {% endfor %}
+                                    </datalist>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <label for="model" class="form-label">Modelo *</label>
+                                    <input type="text" class="form-control" id="model" name="model" 
+                                           value="{{ order.model if editing else '' }}" 
+                                           list="models_list" required>
+                                    <datalist id="models_list">
+                                        {% for model in models %}
+                                        <option value="{{ model.model_name }}">{{ model.description }}</option>
+                                        {% endfor %}
+                                    </datalist>
+                                </div>
+                                
+                                <div class="col-md-2">
+                                    <label for="size" class="form-label">Tamanho *</label>
+                                    <select class="form-select" id="size" name="size" required>
+                                        <option value="">Selecione</option>
+                                        {% for size in sizes %}
+                                        <option value="{{ size.size_name }}" 
+                                                {% if editing and order.size == size.size_name %}selected{% endif %}>
+                                            {{ size.size_name }}
+                                        </option>
+                                        {% endfor %}
+                                        <option value="PP" {% if editing and order.size == 'PP' %}selected{% endif %}>PP</option>
+                                        <option value="P" {% if editing and order.size == 'P' %}selected{% endif %}>P</option>
+                                        <option value="M" {% if editing and order.size == 'M' %}selected{% endif %}>M</option>
+                                        <option value="G" {% if editing and order.size == 'G' %}selected{% endif %}>G</option>
+                                        <option value="GG" {% if editing and order.size == 'GG' %}selected{% endif %}>GG</option>
+                                        <option value="XG" {% if editing and order.size == 'XG' %}selected{% endif %}>XG</option>
+                                        <option value="XXG" {% if editing and order.size == 'XXG' %}selected{% endif %}>XXG</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-2">
+                                    <label for="quantity" class="form-label">Quantidade *</label>
+                                    <input type="number" class="form-control" id="quantity" name="quantity" 
+                                           value="{{ order.quantity if editing else '1' }}" min="1" required>
+                                </div>
+                                
+                                <div class="col-md-2">
+                                    <label for="color" class="form-label">Cor</label>
+                                    <input type="text" class="form-control" id="color" name="color" 
+                                           value="{{ order.color if editing else '' }}" 
+                                           placeholder="Ex: Azul">
+                                </div>
+
+                                <!-- Pricing Information -->
+                                <div class="col-12 mt-4">
+                                    <h6 class="fw-bold text-primary border-bottom pb-2">
+                                        <i class="fas fa-dollar-sign me-2"></i>Informações de Preço
+                                    </h6>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <label for="unit_price" class="form-label">Valor Unitário (R$)</label>
+                                    <input type="number" class="form-control" id="unit_price" name="unit_price" 
+                                           value="{{ order.unit_price if editing else '0.00' }}" 
+                                           step="0.01" min="0">
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <label for="total_price_display" class="form-label">Valor Total (R$)</label>
+                                    <input type="text" class="form-control" id="total_price_display" 
+                                           readonly style="background-color: #e9ecef;">
+                                </div>
+
+                                <!-- Order Details -->
+                                <div class="col-12 mt-4">
+                                    <h6 class="fw-bold text-primary border-bottom pb-2">
+                                        <i class="fas fa-calendar-alt me-2"></i>Detalhes do Pedido
+                                    </h6>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <label for="status" class="form-label">Status</label>
+                                    <select class="form-select" id="status" name="status">
+                                        <option value="Pendente" {% if editing and order.status == 'Pendente' %}selected{% endif %}>Pendente</option>
+                                        <option value="Em Produção" {% if editing and order.status == 'Em Produção' %}selected{% endif %}>Em Produção</option>
+                                        <option value="Pronto" {% if editing and order.status == 'Pronto' %}selected{% endif %}>Pronto</option>
+                                        <option value="Entregue" {% if editing and order.status == 'Entregue' %}selected{% endif %}>Entregue</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <label for="delivery_date" class="form-label">Data de Entrega</label>
+                                    <input type="date" class="form-control" id="delivery_date" name="delivery_date" 
+                                           value="{{ order.delivery_date.strftime('%Y-%m-%d') if editing and order.delivery_date else '' }}">
+                                </div>
+                                
+                                <div class="col-12">
+                                    <label for="observations" class="form-label">Observações</label>
+                                    <textarea class="form-control" id="observations" name="observations" rows="3" 
+                                              placeholder="Observações adicionais sobre o pedido...">{{ order.observations if editing else '' }}</textarea>
+                                </div>
+
+                                <!-- Form Actions -->
+                                <div class="col-12 mt-4">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="{{ url_for('orders') }}" class="btn btn-secondary">
+                                            <i class="fas fa-times me-2"></i>Cancelar
+                                        </a>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save me-2"></i>{{ 'Atualizar' if editing else 'Salvar' }} Pedido
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Calculate total price
+function calculateTotal() {
+    const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+    const unitPrice = parseFloat(document.getElementById('unit_price').value) || 0;
+    const total = quantity * unitPrice;
+    
+    document.getElementById('total_price_display').value = 'R$ ' + total.toFixed(2);
+}
+
+// Event listeners for price calculation
+document.getElementById('quantity').addEventListener('input', calculateTotal);
+document.getElementById('unit_price').addEventListener('input', calculateTotal);
+
+// Initial calculation
+document.addEventListener('DOMContentLoaded', function() {
+    calculateTotal();
+    
+    // Phone mask
+    const phoneInput = document.getElementById('customer_phone');
+    phoneInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 11) {
+            value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+        } else if (value.length >= 6) {
+            value = value.replace(/(\d{2})(\d{4})(\d+)/, '($1) $2-$3');
+        } else if (value.length >= 2) {
+            value = value.replace(/(\d{2})(\d+)/, '($1) $2');
+        }
+        e.target.value = value;
+    });
+});
+
+// Form validation
+document.querySelector('form').addEventListener('submit', function(e) {
+    const requiredFields = ['customer_name', 'lot_number', 'model', 'size', 'quantity'];
+    let isValid = true;
+    
+    requiredFields.forEach(field => {
+        const element = document.getElementById(field);
+        if (!element.value.trim()) {
+            element.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            element.classList.remove('is-invalid');
+        }
+    });
+    
+    if (!isValid) {
+        e.preventDefault();
+        alert('Por favor, preencha todos os campos obrigatórios.');
+    }
+});
+</script>
+{% endblock %}

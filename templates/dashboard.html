@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Igreja Evangélica Assembleia de Deus Jerusalém{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h3 fw-bold text-primary">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </h1>
+                        <p class="text-muted mb-0">Visão geral do sistema de pedidos de camisetas</p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('new_order') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Novo Pedido
+                        </a>
+                        <a href="{{ url_for('generate_pdf') }}" class="btn btn-outline-danger">
+                            <i class="fas fa-file-pdf me-2"></i>Gerar PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">{{ total_orders }}</h4>
+                                <p class="card-text">Total de Pedidos</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-clipboard-list fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card bg-warning text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">{{ pending_orders }}</h4>
+                                <p class="card-text">Pedidos Pendentes</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-clock fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card bg-success text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">{{ completed_orders }}</h4>
+                                <p class="card-text">Pedidos Entregues</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-check-circle fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card bg-info text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">R$ {{ "%.2f"|format(total_revenue) }}</h4>
+                                <p class="card-text">Receita Total</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-dollar-sign fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-pie me-2"></i>Pedidos por Status
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="statusChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>Pedidos por Tamanho
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="sizeChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-history me-2"></i>Pedidos Recentes
+                            </h5>
+                            <a href="{{ url_for('orders') }}" class="btn btn-outline-primary btn-sm">
+                                Ver Todos <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% if recent_orders %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Cliente</th>
+                                            <th>Lote</th>
+                                            <th>Modelo</th>
+                                            <th>Tamanho</th>
+                                            <th>Quantidade</th>
+                                            <th>Valor Total</th>
+                                            <th>Status</th>
+                                            <th>Data</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in recent_orders %}
+                                        <tr>
+                                            <td>{{ order.customer_name }}</td>
+                                            <td>{{ order.lot_number }}</td>
+                                            <td>{{ order.model }}</td>
+                                            <td>{{ order.size }}</td>
+                                            <td>{{ order.quantity }}</td>
+                                            <td>R$ {{ "%.2f"|format(order.total_price) }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ 'warning' if order.status == 'Pendente' else 'info' if order.status == 'Em Produção' else 'primary' if order.status == 'Pronto' else 'success' }}">
+                                                    {{ order.status }}
+                                                </span>
+                                            </td>
+                                            <td>{{ order.created_at.strftime('%d/%m/%Y') }}</td>
+                                            <td>
+                                                <a href="{{ url_for('edit_order', order_id=order.id) }}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">Nenhum pedido encontrado</h5>
+                                <p class="text-muted">Comece criando seu primeiro pedido</p>
+                                <a href="{{ url_for('new_order') }}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Criar Primeiro Pedido
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Status Chart
+const statusCtx = document.getElementById('statusChart').getContext('2d');
+const statusData = [
+    {% for status, count in status_counts %}
+    { label: '{{ status }}', value: {{ count }} },
+    {% endfor %}
+];
+
+new Chart(statusCtx, {
+    type: 'doughnut',
+    data: {
+        labels: statusData.map(item => item.label),
+        datasets: [{
+            data: statusData.map(item => item.value),
+            backgroundColor: [
+                '#ffc107', // Pendente - Warning
+                '#17a2b8', // Em Produção - Info
+                '#007bff', // Pronto - Primary
+                '#28a745'  // Entregue - Success
+            ],
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Size Chart
+const sizeCtx = document.getElementById('sizeChart').getContext('2d');
+const sizeData = [
+    {% for size, count in size_counts %}
+    { label: '{{ size }}', value: {{ count }} },
+    {% endfor %}
+];
+
+new Chart(sizeCtx, {
+    type: 'bar',
+    data: {
+        labels: sizeData.map(item => item.label),
+        datasets: [{
+            label: 'Quantidade de Pedidos',
+            data: sizeData.map(item => item.value),
+            backgroundColor: '#007bff',
+            borderColor: '#0056b3',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
