@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Lotes e Configurações - Igreja Evangélica Assembleia de Deus Jerusalém{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h3 fw-bold text-primary">
+                            <i class="fas fa-cogs me-2"></i>Gerenciar Configurações
+                        </h1>
+                        <p class="text-muted mb-0">Gerencie lotes, tamanhos e modelos do sistema</p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Voltar ao Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-4" id="configTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="lots-tab" data-bs-toggle="tab" data-bs-target="#lots" 
+                        type="button" role="tab">
+                    <i class="fas fa-boxes me-2"></i>Lotes
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="sizes-tab" data-bs-toggle="tab" data-bs-target="#sizes" 
+                        type="button" role="tab">
+                    <i class="fas fa-expand-arrows-alt me-2"></i>Tamanhos
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="models-tab" data-bs-toggle="tab" data-bs-target="#models" 
+                        type="button" role="tab">
+                    <i class="fas fa-tshirt me-2"></i>Modelos
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="configTabContent">
+            <!-- Lots Tab -->
+            <div class="tab-pane fade show active" id="lots" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-plus me-2"></i>Adicionar Novo Lote
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST" action="{{ url_for('add_lot') }}">
+                                    <div class="mb-3">
+                                        <label for="lot_number" class="form-label">Número do Lote *</label>
+                                        <input type="text" class="form-control" id="lot_number" name="lot_number" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="lot_description" class="form-label">Descrição</label>
+                                        <input type="text" class="form-control" id="lot_description" name="description" 
+                                               placeholder="Ex: Lote Outubro 2024">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Adicionar Lote
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-list me-2"></i>Lotes Existentes
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% if lots %}
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Número</th>
+                                                    <th>Descrição</th>
+                                                    <th>Data</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for lot in lots %}
+                                                <tr>
+                                                    <td><strong>{{ lot.lot_number }}</strong></td>
+                                                    <td>{{ lot.description or '-' }}</td>
+                                                    <td><small>{{ lot.created_at.strftime('%d/%m/%Y') }}</small></td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <p class="text-muted">Nenhum lote cadastrado ainda.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sizes Tab -->
+            <div class="tab-pane fade" id="sizes" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-plus me-2"></i>Adicionar Novo Tamanho
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST" action="{{ url_for('add_size') }}">
+                                    <div class="mb-3">
+                                        <label for="size_name" class="form-label">Tamanho *</label>
+                                        <input type="text" class="form-control" id="size_name" name="size_name" required
+                                               placeholder="Ex: PP, P, M, G, GG">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="size_description" class="form-label">Descrição</label>
+                                        <input type="text" class="form-control" id="size_description" name="description" 
+                                               placeholder="Ex: Extra Pequeno">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Adicionar Tamanho
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Models Tab -->
+            <div class="tab-pane fade" id="models" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-plus me-2"></i>Adicionar Novo Modelo
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST" action="{{ url_for('add_model') }}">
+                                    <div class="mb-3">
+                                        <label for="model_name" class="form-label">Nome do Modelo *</label>
+                                        <input type="text" class="form-control" id="model_name" name="model_name" required
+                                               placeholder="Ex: Camiseta Básica">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="model_description" class="form-label">Descrição</label>
+                                        <input type="text" class="form-control" id="model_description" name="description" 
+                                               placeholder="Ex: Camiseta 100% algodão">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Adicionar Modelo
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

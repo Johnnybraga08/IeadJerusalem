@@ -82,11 +82,11 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
-                                <h4 class="card-title">R$ {{ "%.2f"|format(total_revenue) }}</h4>
-                                <p class="card-text">Receita Total</p>
+                                <h4 class="card-title">{{ total_pieces }}</h4>
+                                <p class="card-text">Total de Peças</p>
                             </div>
                             <div class="align-self-center">
-                                <i class="fas fa-dollar-sign fa-2x"></i>
+                                <i class="fas fa-tshirt fa-2x"></i>
                             </div>
                         </div>
                     </div>
@@ -143,12 +143,12 @@
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Cliente</th>
+                                            <th>Congregação</th>
+                                            <th>Responsável</th>
                                             <th>Lote</th>
                                             <th>Modelo</th>
                                             <th>Tamanho</th>
                                             <th>Quantidade</th>
-                                            <th>Valor Total</th>
                                             <th>Status</th>
                                             <th>Data</th>
                                             <th>Ações</th>
@@ -157,12 +157,12 @@
                                     <tbody>
                                         {% for order in recent_orders %}
                                         <tr>
-                                            <td>{{ order.customer_name }}</td>
+                                            <td>{{ order.congregation_name }}</td>
+                                            <td>{{ order.responsible_name }}</td>
                                             <td>{{ order.lot_number }}</td>
                                             <td>{{ order.model }}</td>
                                             <td>{{ order.size }}</td>
                                             <td>{{ order.quantity }}</td>
-                                            <td>R$ {{ "%.2f"|format(order.total_price) }}</td>
                                             <td>
                                                 <span class="badge bg-{{ 'warning' if order.status == 'Pendente' else 'info' if order.status == 'Em Produção' else 'primary' if order.status == 'Pronto' else 'success' }}">
                                                     {{ order.status }}

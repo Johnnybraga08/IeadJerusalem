@@ -115,15 +115,14 @@
                                     <thead class="table-dark">
                                         <tr>
                                             <th>ID</th>
-                                            <th>Cliente</th>
+                                            <th>Congregação</th>
+                                            <th>Responsável</th>
                                             <th>Contato</th>
                                             <th>Lote</th>
                                             <th>Modelo</th>
                                             <th>Tamanho</th>
                                             <th>Qtd</th>
                                             <th>Cor</th>
-                                            <th>Valor Unit.</th>
-                                            <th>Valor Total</th>
                                             <th>Status</th>
                                             <th>Data Pedido</th>
                                             <th>Data Entrega</th>
@@ -134,13 +133,14 @@
                                         {% for order in orders %}
                                         <tr>
                                             <td><strong>#{{ order.id }}</strong></td>
-                                            <td>{{ order.customer_name }}</td>
+                                            <td>{{ order.congregation_name }}</td>
+                                            <td>{{ order.responsible_name }}</td>
                                             <td>
-                                                {% if order.customer_phone %}
-                                                    <small class="d-block">{{ order.customer_phone }}</small>
+                                                {% if order.responsible_phone %}
+                                                    <small class="d-block">{{ order.responsible_phone }}</small>
                                                 {% endif %}
-                                                {% if order.customer_email %}
-                                                    <small class="d-block text-muted">{{ order.customer_email }}</small>
+                                                {% if order.responsible_email %}
+                                                    <small class="d-block text-muted">{{ order.responsible_email }}</small>
                                                 {% endif %}
                                             </td>
                                             <td><span class="badge bg-secondary">{{ order.lot_number }}</span></td>
@@ -148,8 +148,6 @@
                                             <td><span class="badge bg-info">{{ order.size }}</span></td>
                                             <td><strong>{{ order.quantity }}</strong></td>
                                             <td>{{ order.color or '-' }}</td>
-                                            <td>R$ {{ "%.2f"|format(order.unit_price) }}</td>
-                                            <td><strong>R$ {{ "%.2f"|format(order.total_price) }}</strong></td>
                                             <td>
                                                 <span class="badge bg-{{ 'warning' if order.status == 'Pendente' else 'info' if order.status == 'Em Produção' else 'primary' if order.status == 'Pronto' else 'success' }}">
                                                     {{ order.status }}

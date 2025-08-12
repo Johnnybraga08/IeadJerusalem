@@ -6,6 +6,13 @@ This is a T-shirt order management system built for Igreja Evangélica Assemblei
 
 Preferred communication style: Simple, everyday language.
 
+## Customizations Applied
+- **No Religious Symbols**: Cross icons removed from all interfaces, replaced with generic icons (home, building, user-shield)
+- **Terminology**: Changed "cliente" to "congregação" throughout the system
+- **Money Features Removed**: All price, cost, and monetary calculation features disabled
+- **Responsible Person Field**: Added responsible person contact information for each congregation
+- **Admin Credentials**: System uses specific admin login (arielle.tigre@hotmail.com / Ar@983522274)
+
 # System Architecture
 
 ## Frontend Architecture
@@ -36,11 +43,11 @@ Preferred communication style: Simple, everyday language.
 
 ## Core Features
 - **Order Management**: Complete CRUD operations for T-shirt orders
-- **Status Tracking**: Order status progression (Pending, In Production, Ready, Delivered)
-- **Customer Management**: Customer information storage and retrieval
+- **Status Tracking**: Order status progression (Pendente, Em Produção, Pronto, Entregue)
+- **Congregation Management**: Congregation information and responsible person data storage
 - **Inventory Management**: Lot, size, and model catalog management
-- **Reporting**: PDF report generation with detailed order information
-- **Dashboard**: Statistical overview with charts and key metrics
+- **Reporting**: PDF report generation with quantity-focused information (no monetary details)
+- **Dashboard**: Statistical overview with charts and key metrics focused on quantities and status
 
 # External Dependencies
 

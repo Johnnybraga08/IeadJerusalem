@@ -53,7 +53,7 @@ def dashboard():
     total_orders = TShirtOrder.query.count()
     pending_orders = TShirtOrder.query.filter_by(status='Pendente').count()
     completed_orders = TShirtOrder.query.filter_by(status='Entregue').count()
-    total_revenue = db.session.query(db.func.sum(TShirtOrder.total_price)).scalar() or 0
+    total_pieces = db.session.query(db.func.sum(TShirtOrder.quantity)).scalar() or 0
     
     # Recent orders
     recent_orders = TShirtOrder.query.order_by(TShirtOrder.created_at.desc()).limit(10).all()
@@ -74,7 +74,7 @@ def dashboard():
                          total_orders=total_orders,
                          pending_orders=pending_orders,
                          completed_orders=completed_orders,
-                         total_revenue=total_revenue,
+                         total_pieces=total_pieces,
                          recent_orders=recent_orders,
                          status_counts=status_counts,
                          size_counts=size_counts)
@@ -125,23 +125,19 @@ def orders():
 @login_required
 def new_order():
     if request.method == 'POST':
-        # Calculate total price
-        unit_price = float(request.form.get('unit_price', 0))
         quantity = int(request.form.get('quantity', 1))
-        total_price = unit_price * quantity
         
         # Create new order
         order = TShirtOrder(
-            customer_name=request.form['customer_name'],
-            customer_phone=request.form.get('customer_phone'),
-            customer_email=request.form.get('customer_email'),
+            congregation_name=request.form['congregation_name'],
+            responsible_name=request.form['responsible_name'],
+            responsible_phone=request.form.get('responsible_phone'),
+            responsible_email=request.form.get('responsible_email'),
             lot_number=request.form['lot_number'],
             model=request.form['model'],
             size=request.form['size'],
             quantity=quantity,
             color=request.form.get('color'),
-            unit_price=unit_price,
-            total_price=total_price,
             observations=request.form.get('observations'),
             delivery_date=datetime.strptime(request.form['delivery_date'], '%Y-%m-%d') if request.form.get('delivery_date') else None,
             status=request.form.get('status', 'Pendente')
@@ -167,16 +163,15 @@ def edit_order(order_id):
     
     if request.method == 'POST':
         # Update order
-        order.customer_name = request.form['customer_name']
-        order.customer_phone = request.form.get('customer_phone')
-        order.customer_email = request.form.get('customer_email')
+        order.congregation_name = request.form['congregation_name']
+        order.responsible_name = request.form['responsible_name']
+        order.responsible_phone = request.form.get('responsible_phone')
+        order.responsible_email = request.form.get('responsible_email')
         order.lot_number = request.form['lot_number']
         order.model = request.form['model']
         order.size = request.form['size']
         order.quantity = int(request.form.get('quantity', 1))
         order.color = request.form.get('color')
-        order.unit_price = float(request.form.get('unit_price', 0))
-        order.total_price = order.unit_price * order.quantity
         order.observations = request.form.get('observations')
         order.delivery_date = datetime.strptime(request.form['delivery_date'], '%Y-%m-%d') if request.form.get('delivery_date') else None
         order.status = request.form.get('status', 'Pendente')
@@ -230,11 +225,11 @@ def generate_pdf():
     
     # Summary statistics
     total_orders = len(orders)
-    total_revenue = sum(order.total_price for order in orders)
+    total_pieces = sum(order.quantity for order in orders)
     
     summary_data = [
         ['Total de Pedidos:', str(total_orders)],
-        ['Receita Total:', f'R$ {total_revenue:.2f}'],
+        ['Total de Peças:', str(total_pieces)],
         ['Data do Relatório:', datetime.now().strftime('%d/%m/%Y %H:%M')]
     ]
     
@@ -255,22 +250,22 @@ def generate_pdf():
     # Orders table
     if orders:
         # Table headers
-        data = [['Cliente', 'Lote', 'Modelo', 'Tamanho', 'Qtd', 'Valor Total', 'Status', 'Data']]
+        data = [['Congregação', 'Responsável', 'Lote', 'Modelo', 'Tamanho', 'Qtd', 'Status', 'Data']]
         
         # Table data
         for order in orders:
             data.append([
-                order.customer_name,
+                order.congregation_name,
+                order.responsible_name,
                 order.lot_number,
                 order.model,
                 order.size,
                 str(order.quantity),
-                f'R$ {order.total_price:.2f}',
                 order.status,
                 order.order_date.strftime('%d/%m/%Y')
             ])
         
-        table = Table(data, colWidths=[1.2*inch, 0.8*inch, 1*inch, 0.6*inch, 0.5*inch, 0.8*inch, 0.8*inch, 0.8*inch])
+        table = Table(data, colWidths=[1.4*inch, 1.2*inch, 0.8*inch, 1*inch, 0.6*inch, 0.5*inch, 0.8*inch, 0.8*inch])
         table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -349,7 +344,7 @@ def add_model():
     if existing_model:
         flash('Modelo já existe!', 'error')
     else:
-        model = Model(model_name=model_name, description=description, base_price=base_price)
+        model = Model(model_name=model_name, description=description)
         db.session.add(model)
         db.session.commit()
         flash('Modelo adicionado com sucesso!', 'success')

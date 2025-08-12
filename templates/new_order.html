@@ -37,31 +37,37 @@
                     <div class="card-body">
                         <form method="POST" action="{{ url_for('edit_order', order_id=order.id) if editing else url_for('new_order') }}">
                             <div class="row g-4">
-                                <!-- Customer Information -->
+                                <!-- Congregation Information -->
                                 <div class="col-12">
                                     <h6 class="fw-bold text-primary border-bottom pb-2">
-                                        <i class="fas fa-user me-2"></i>Dados do Cliente
+                                        <i class="fas fa-users me-2"></i>Dados da Congregação
                                     </h6>
                                 </div>
                                 
-                                <div class="col-md-4">
-                                    <label for="customer_name" class="form-label">Nome do Cliente *</label>
-                                    <input type="text" class="form-control" id="customer_name" name="customer_name" 
-                                           value="{{ order.customer_name if editing else '' }}" required>
+                                <div class="col-md-6">
+                                    <label for="congregation_name" class="form-label">Nome da Congregação *</label>
+                                    <input type="text" class="form-control" id="congregation_name" name="congregation_name" 
+                                           value="{{ order.congregation_name if editing else '' }}" required>
                                 </div>
                                 
-                                <div class="col-md-4">
-                                    <label for="customer_phone" class="form-label">Telefone</label>
-                                    <input type="tel" class="form-control" id="customer_phone" name="customer_phone" 
-                                           value="{{ order.customer_phone if editing else '' }}" 
+                                <div class="col-md-6">
+                                    <label for="responsible_name" class="form-label">Nome do Responsável *</label>
+                                    <input type="text" class="form-control" id="responsible_name" name="responsible_name" 
+                                           value="{{ order.responsible_name if editing else '' }}" required>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label for="responsible_phone" class="form-label">Telefone do Responsável</label>
+                                    <input type="tel" class="form-control" id="responsible_phone" name="responsible_phone" 
+                                           value="{{ order.responsible_phone if editing else '' }}" 
                                            placeholder="(11) 99999-9999">
                                 </div>
                                 
-                                <div class="col-md-4">
-                                    <label for="customer_email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="customer_email" name="customer_email" 
-                                           value="{{ order.customer_email if editing else '' }}" 
-                                           placeholder="cliente@email.com">
+                                <div class="col-md-6">
+                                    <label for="responsible_email" class="form-label">Email do Responsável</label>
+                                    <input type="email" class="form-control" id="responsible_email" name="responsible_email" 
+                                           value="{{ order.responsible_email if editing else '' }}" 
+                                           placeholder="responsavel@email.com">
                                 </div>
 
                                 <!-- Product Information -->
@@ -128,25 +134,7 @@
                                            placeholder="Ex: Azul">
                                 </div>
 
-                                <!-- Pricing Information -->
-                                <div class="col-12 mt-4">
-                                    <h6 class="fw-bold text-primary border-bottom pb-2">
-                                        <i class="fas fa-dollar-sign me-2"></i>Informações de Preço
-                                    </h6>
-                                </div>
-                                
-                                <div class="col-md-3">
-                                    <label for="unit_price" class="form-label">Valor Unitário (R$)</label>
-                                    <input type="number" class="form-control" id="unit_price" name="unit_price" 
-                                           value="{{ order.unit_price if editing else '0.00' }}" 
-                                           step="0.01" min="0">
-                                </div>
-                                
-                                <div class="col-md-3">
-                                    <label for="total_price_display" class="form-label">Valor Total (R$)</label>
-                                    <input type="text" class="form-control" id="total_price_display" 
-                                           readonly style="background-color: #e9ecef;">
-                                </div>
+
 
                                 <!-- Order Details -->
                                 <div class="col-12 mt-4">
@@ -200,41 +188,27 @@
 
 {% block scripts %}
 <script>
-// Calculate total price
-function calculateTotal() {
-    const quantity = parseFloat(document.getElementById('quantity').value) || 0;
-    const unitPrice = parseFloat(document.getElementById('unit_price').value) || 0;
-    const total = quantity * unitPrice;
-    
-    document.getElementById('total_price_display').value = 'R$ ' + total.toFixed(2);
-}
-
-// Event listeners for price calculation
-document.getElementById('quantity').addEventListener('input', calculateTotal);
-document.getElementById('unit_price').addEventListener('input', calculateTotal);
-
-// Initial calculation
 document.addEventListener('DOMContentLoaded', function() {
-    calculateTotal();
-    
     // Phone mask
-    const phoneInput = document.getElementById('customer_phone');
-    phoneInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value.length >= 11) {
-            value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-        } else if (value.length >= 6) {
-            value = value.replace(/(\d{2})(\d{4})(\d+)/, '($1) $2-$3');
-        } else if (value.length >= 2) {
-            value = value.replace(/(\d{2})(\d+)/, '($1) $2');
-        }
-        e.target.value = value;
-    });
+    const phoneInput = document.getElementById('responsible_phone');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 11) {
+                value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            } else if (value.length >= 6) {
+                value = value.replace(/(\d{2})(\d{4})(\d+)/, '($1) $2-$3');
+            } else if (value.length >= 2) {
+                value = value.replace(/(\d{2})(\d+)/, '($1) $2');
+            }
+            e.target.value = value;
+        });
+    }
 });
 
 // Form validation
 document.querySelector('form').addEventListener('submit', function(e) {
-    const requiredFields = ['customer_name', 'lot_number', 'model', 'size', 'quantity'];
+    const requiredFields = ['congregation_name', 'responsible_name', 'lot_number', 'model', 'size', 'quantity'];
     let isValid = true;
     
     requiredFields.forEach(field => {
